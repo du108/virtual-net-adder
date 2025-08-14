@@ -37,14 +37,14 @@ async function addNetwork() {
         await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [{
-                chainId: '11384388', // 十六进制格式的chainId
-                chainName: 'Tenderly Virtual TestNet',
+                chainId: '0x11384388', // 十六进制格式的chainId
+                chainName: 'Tenderly Virtual TestNet22',
                 rpcUrls: ['https://virtual.mainnet.eu.rpc.tenderly.co/416c8671-b4b0-44fa-8dbf-7befd3781058'],
-                // nativeCurrency: {
-                //     name: 'ETH',
-                //     symbol: 'ETH',
-                //     decimals: 5
-                // },
+                nativeCurrency: {
+                    name: 'Matic',
+                    symbol: 'Matic',
+                    decimals: 8
+                },
                 blockExplorerUrls: ['https://dashboard.tenderly.co/explorer']
             }]
         });
