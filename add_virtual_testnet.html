@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>一键添加 Virtual TestNet</title>
+</head>
+<body>
+<script>
+// 更健壮的MetaMask检测函数
+function detectMetaMask() {
+    return new Promise((resolve) => {
+        if (typeof window.ethereum !== 'undefined') {
+            resolve(true);
+        } else {
+            // 等待一段时间后再次检测
+            setTimeout(() => {
+                resolve(typeof window.ethereum !== 'undefined');
+            }, 1000);
+        }
+    });
+}
+
+// 主函数
+async function addNetwork() {
+    const hasMetaMask = await detectMetaMask();
+    
+    if (!hasMetaMask) {
+        alert("请先安装 MetaMask 扩展！\n\n可能的原因：\n1. MetaMask未安装\n2. MetaMask未启用\n3. 请刷新页面重试");
+        return;
+    }
+    
+    try {
+        // 首先请求连接权限
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        
+        // 添加网络
+        await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+                chainId: '11384388', // 十六进制格式的chainId
+                chainName: 'Tenderly Virtual TestNet',
+                rpcUrls: ['https://virtual.mainnet.eu.rpc.tenderly.co/416c8671-b4b0-44fa-8dbf-7befd3781058'],
+                nativeCurrency: {
+                    name: 'ETH',
+                    symbol: 'ETH',
+                    decimals: 5
+                },
+                blockExplorerUrls: ['https://dashboard.tenderly.co/explorer']
+            }]
+        });
+        
+        alert("网络添加成功！");
+        
+    } catch (err) {
+        console.error('添加网络失败:', err);
+        
+        if (err.code === 4001) {
+            alert("用户拒绝了请求");
+        } else if (err.code === -32602) {
+            alert("参数无效，请检查网络配置");
+        } else {
+            alert(`添加网络失败: ${err.message}`);
+        }
+    }
+}
+
+// 页面加载完成后执行
+window.addEventListener('load', () => {
+    // 延迟执行，确保MetaMask完全加载
+    setTimeout(addNetwork, 500);
+});
+
+// 也可以添加手动触发按钮
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.innerHTML += `
+        <div style="text-align: center; margin-top: 50px;">
+            <h2>添加 Tenderly Virtual TestNet</h2>
+            <button onclick="addNetwork()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+                点击添加网络
+            </button>
+            <p style="margin-top: 20px; color: #666;">
+                如果自动添加失败，请点击上方按钮手动添加
+            </p>
+        </div>
+    `;
+});
+</script>
+</body>
+</html>
